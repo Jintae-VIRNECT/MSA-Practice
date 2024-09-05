@@ -1,0 +1,28 @@
+package com.fastcampuspay.banking.adapter.out.persistence;
+
+import com.fastcampuspay.banking.application.port.out.RegisterBankAccountPort;
+import com.fastcampuspay.banking.domain.RegisteredBankAccount;
+import com.fastcampuspay.common.PersistenceAdapter;
+
+import lombok.RequiredArgsConstructor;
+
+@PersistenceAdapter
+@RequiredArgsConstructor
+public class RegisteredBankAccountPersistenceAdapter implements RegisterBankAccountPort {
+	private final SpringDataRegisteredBankAccountRepository registeredBankAccountRepository;
+
+	@Override
+	public RegisteredBankAccountJpaEntity createRegisteredBankAccount(
+		RegisteredBankAccount.MembershipId membershipId, RegisteredBankAccount.BankName bankName,
+		RegisteredBankAccount.BankAccountNumber bankAccountNumber, RegisteredBankAccount.LinkedStatusIsValid linkedStatusIsValid
+	) {
+		return registeredBankAccountRepository.save(
+			RegisteredBankAccountJpaEntity.of(
+				membershipId.getMembershipId(),
+				bankName.getBankName(),
+				bankAccountNumber.getBankAccountNumber(),
+				linkedStatusIsValid.isLinkedStatusIsValid()
+			)
+		);
+	}
+}

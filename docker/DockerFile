@@ -11,4 +11,4 @@ COPY ${JAR_FILE} /app.jar
 # 4. 프로덕션 설정을 위한 JVM 옵션 (선택적)
 # -Djava.security.egd=file:/dev/./urandom: JVM 성능 최적화
 # -Dspring.profiles.active=prod: 프로덕션 환경을 위한 Spring Profile
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=prod", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=dev", "-jar", "/app.jar"]
