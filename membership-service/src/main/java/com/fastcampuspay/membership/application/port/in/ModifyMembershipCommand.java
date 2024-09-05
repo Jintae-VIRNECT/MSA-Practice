@@ -1,7 +1,7 @@
 package com.fastcampuspay.membership.application.port.in;
 
 import com.fastcampuspay.common.SelfValidating;
-import com.fastcampuspay.membership.adapter.in.web.RegisterMembershipRequest;
+import com.fastcampuspay.membership.adapter.in.web.ModifyMembershipRequest;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,19 +11,22 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class RegisterMembershipCommand extends SelfValidating<RegisterMembershipCommand> {
+public class ModifyMembershipCommand extends SelfValidating<RegisterMembershipCommand> {
+	@NotEmpty
+	private final String membershipId;
 	@NotEmpty
 	private final String name;
 	@NotEmpty
 	private final String email;
 	@NotEmpty
 	private final String address;
+	private final boolean isValid;
 	@AssertTrue
 	private final boolean isCorp;
-	private final boolean isValid;
 
 	@Builder
-	public RegisterMembershipCommand(String name, String email, String address, boolean isValid, boolean isCorp) {
+	public ModifyMembershipCommand(String membershipId, String name, String email, String address, boolean isValid, boolean isCorp) {
+		this.membershipId = membershipId;
 		this.name = name;
 		this.email = email;
 		this.address = address;
@@ -33,13 +36,14 @@ public class RegisterMembershipCommand extends SelfValidating<RegisterMembership
 		this.validateSelf();
 	}
 
-	public static RegisterMembershipCommand from(RegisterMembershipRequest request) {
-
-		return RegisterMembershipCommand.builder()
+	public static ModifyMembershipCommand from(ModifyMembershipRequest request) {
+		return ModifyMembershipCommand.builder()
+			.membershipId(request.getMembershipId())
 			.name(request.getName())
 			.email(request.getEmail())
 			.address(request.getAddress())
 			.isCorp(request.isCorp())
+			.isValid(request.isValid())
 			.build();
 	}
 }

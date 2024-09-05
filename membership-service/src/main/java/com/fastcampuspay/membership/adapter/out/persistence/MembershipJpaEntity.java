@@ -7,10 +7,12 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "membership")
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class MembershipJpaEntity {
 	@Id

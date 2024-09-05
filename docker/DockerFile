@@ -1,0 +1,14 @@
+# 1. Java 17 기반 slim 이미지 사용
+FROM openjdk:17-slim
+
+# 2. 8080 포트 노출 (Spring Boot 기본 포트)
+EXPOSE 8080
+
+# 3. ARG로 전달된 JAR 파일을 복사
+ARG JAR_FILE=target/app.jar
+COPY ${JAR_FILE} /app.jar
+
+# 4. 프로덕션 설정을 위한 JVM 옵션 (선택적)
+# -Djava.security.egd=file:/dev/./urandom: JVM 성능 최적화
+# -Dspring.profiles.active=prod: 프로덕션 환경을 위한 Spring Profile
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=prod", "-jar", "/app.jar"]

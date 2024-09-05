@@ -1,4 +1,4 @@
-package com.fastcampuspay.membership.common;
+package com.fastcampuspay.common;
 
 import java.util.Set;
 

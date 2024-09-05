@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fastcampuspay.common.WebAdapter;
 import com.fastcampuspay.membership.application.port.in.FindMembershipCommand;
 import com.fastcampuspay.membership.application.port.in.FindMembershipUserCase;
-import com.fastcampuspay.membership.common.WebAdapter;
 import com.fastcampuspay.membership.domain.Membership;
 
 import lombok.RequiredArgsConstructor;

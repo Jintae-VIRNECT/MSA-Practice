@@ -1,4 +1,4 @@
-package com.fastcampuspay.membership.common;
+package com.fastcampuspay.common;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface WebAdapter {
+public @interface UseCase {
 	@AliasFor(annotation = Component.class)
 	String value() default "";
 }
