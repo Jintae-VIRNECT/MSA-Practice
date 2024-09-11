@@ -1,0 +1,36 @@
+plugins {
+    id 'com.palantir.docker' version '0.35.0'
+}
+
+group = 'com.fastcampuspay.consumer.logging'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+docker {
+    dependsOn tasks.bootJar // Docker 빌드가 bootJar 후에 실행되도록 설정
+    name rootProject.name + '-' + project.name + ":" + version
+    dockerfile file('../docker/Dockerfile')
+    files tasks.bootJar.outputs.files
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
+}
