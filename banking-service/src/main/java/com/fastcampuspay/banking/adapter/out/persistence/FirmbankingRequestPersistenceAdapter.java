@@ -1,5 +1,6 @@
 package com.fastcampuspay.banking.adapter.out.persistence;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.fastcampuspay.banking.application.port.out.RequestFirmbankingPort;
@@ -18,7 +19,9 @@ public class FirmbankingRequestPersistenceAdapter implements RequestFirmbankingP
 	public FirmbankingRequestJpaEntity createFirmbankingRequest(
 		FirmbankingRequest.FromBankName fromBankName, FirmbankingRequest.FromBankAccountNumber fromBankAccountNumber,
 		FirmbankingRequest.ToBankName toBankName, FirmbankingRequest.ToBankAccountNumber toBankAccountNumber,
-		FirmbankingRequest.MoneyAmount moneyAmount, FirmbankingRequest.FirmbankingStatus firmbankingStatus
+		FirmbankingRequest.MoneyAmount moneyAmount, FirmbankingRequest.FirmbankingStatus firmbankingStatus,
+		FirmbankingRequest.FirmbankingAggregateIdentifier aggregateIdentifier
+
 	) {
 		return firmbankingRequestRepository.save(new FirmbankingRequestJpaEntity(
 				fromBankName.getFromBankName(),
@@ -26,7 +29,9 @@ public class FirmbankingRequestPersistenceAdapter implements RequestFirmbankingP
 				toBankName.getToBankName(),
 				toBankAccountNumber.getToBankAccountNumber(),
 				moneyAmount.getMoneyAmount(), firmbankingStatus.getFirmBankingStatus(),
-				UUID.randomUUID()
+				UUID.randomUUID(),
+				aggregateIdentifier.getAggregateIdentifier()
+
 			)
 		);
 	}
@@ -34,5 +39,15 @@ public class FirmbankingRequestPersistenceAdapter implements RequestFirmbankingP
 	@Override
 	public FirmbankingRequestJpaEntity modifyFirmbankingRequest(FirmbankingRequestJpaEntity entity) {
 		return firmbankingRequestRepository.save(entity);
+	}
+
+	@Override
+	public FirmbankingRequestJpaEntity getFirmbankingRequest(FirmbankingRequest.FirmbankingAggregateIdentifier firmbankingAggregateIdentifier) {
+		List<FirmbankingRequestJpaEntity> entityList = firmbankingRequestRepository.findByAggregateIdentifier(
+			firmbankingAggregateIdentifier.getAggregateIdentifier());
+		if (!entityList.isEmpty()) {
+			return entityList.get(0);
+		}
+		return null;
 	}
 }

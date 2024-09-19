@@ -19,24 +19,18 @@ public class FirmbankingRequestJpaEntity {
 	@Id
 	@GeneratedValue
 	private Long requestFirmbankingId;
-
 	private String fromBankName;
-
 	private String fromBankAccountNumber;
-
 	private String toBankName;
-
 	private String toBankAccountNumber;
-
 	private int moneyAmount; // only won
-
 	private int firmbankingStatus; // 0: 요청, 1: 완료, 2: 실패
-
 	private String uuid;
+	private String aggregateIdentifier;
 
 	public FirmbankingRequestJpaEntity(
 		String fromBankName, String fromBankAccountNumber, String toBankName, String toBankAccountNumber, int moneyAmount, int firmbankingStatus,
-		UUID uuid
+		UUID uuid, String aggregateIdentifier
 	) {
 		this.fromBankName = fromBankName;
 		this.fromBankAccountNumber = fromBankAccountNumber;
@@ -45,5 +39,6 @@ public class FirmbankingRequestJpaEntity {
 		this.moneyAmount = moneyAmount;
 		this.firmbankingStatus = firmbankingStatus;
 		this.uuid = uuid.toString();
+		this.aggregateIdentifier = aggregateIdentifier;
 	}
 }

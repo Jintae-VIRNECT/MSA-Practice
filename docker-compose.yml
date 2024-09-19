@@ -54,7 +54,7 @@ services:
       - TASK_TOPIC=fastcampus.task.topic
 
   banking-service:
-    image: fastcampuspay-banking-service:1.0.1
+    image: fastcampuspay-banking-service:1.0.2
     networks:
       - fastcampuspay_network
     ports:

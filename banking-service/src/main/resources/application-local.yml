@@ -18,3 +18,9 @@ spring:
 
 
 
+kafka:
+  clusters:
+    bootstrapservers: localhost:9092
+
+logging:
+  topic: fastcampus.logging.out.stdout
