@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fastcampuspay.common.PersistenceAdapter;
+import com.fastcampuspay.money.application.port.in.CreateMemberMoneyPort;
+import com.fastcampuspay.money.application.port.in.GetMemberMoneyPort;
 import com.fastcampuspay.money.application.port.out.IncreaseMoneyPort;
 import com.fastcampuspay.money.domain.MemberMoney;
 import com.fastcampuspay.money.domain.MoneyChangingRequest;
@@ -13,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort {
+public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort, CreateMemberMoneyPort, GetMemberMoneyPort {
 
 	private final SpringDataMoneyChangingRequestRepository moneyChangingRequestRepository;
 
@@ -49,7 +51,7 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
 		} catch (Exception e) {
 			entity = new MemberMoneyJpaEntity(
 				Long.parseLong(memberId.getMembershipId()),
-				increaseMoneyAmount
+				increaseMoneyAmount, ""
 			);
 			entity = memberMoneyRepository.save(entity);
 			return entity;
@@ -59,4 +61,29 @@ public class MoneyChangingRequestPersistenceAdapter implements IncreaseMoneyPort
 		//        entity.setBalance(entity.getBalance() + increaseMoneyAmount);
 		//        return  memberMoneyRepository.save(entity);
 	}
+
+	@Override
+	public void createMemberMoney(MemberMoney.MembershipId memberId, MemberMoney.MoneyAggregateIdentifier aggregateIdentifier) {
+		MemberMoneyJpaEntity entity = new MemberMoneyJpaEntity(
+			Long.parseLong(memberId.getMembershipId()),
+			0, aggregateIdentifier.getAggregateIdentifier()
+		);
+		memberMoneyRepository.save(entity);
+	}
+
+	@Override
+	public MemberMoneyJpaEntity getMemberMoney(MemberMoney.MembershipId memberId) {
+		MemberMoneyJpaEntity entity;
+		List<MemberMoneyJpaEntity> entityList = memberMoneyRepository.findByMembershipId(Long.parseLong(memberId.getMembershipId()));
+		if (entityList.size() == 0) {
+			entity = new MemberMoneyJpaEntity(
+				Long.parseLong(memberId.getMembershipId()),
+				0, ""
+			);
+			entity = memberMoneyRepository.save(entity);
+			return entity;
+		}
+		return entityList.get(0);
+	}
+
 }

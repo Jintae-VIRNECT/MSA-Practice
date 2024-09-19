@@ -1,4 +1,22 @@
 services:
+
+  axon-server:
+    container_name: axon-server
+    image: axoniq/axonserver:latest-jdk-17
+    networks:
+      - fastcampuspay_network
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+    volumes:
+      - axonserver-data:/axonserver/data
+      - axonserver-events:/axonserver/events
+      - axonserver-config:/axonserver/config:ro
+    environment:
+      - AXONIQ_AXONSERVER_STANDALONE=true
+
+
+
   mysql:
     image: mysql:8.0
     networks:
@@ -36,7 +54,7 @@ services:
       - TASK_TOPIC=fastcampus.task.topic
 
   banking-service:
-    image: fastcampuspay-banking-service:1.0.0
+    image: fastcampuspay-banking-service:1.0.1
     networks:
       - fastcampuspay_network
     ports:
@@ -52,7 +70,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=mysqluser
       - SPRING_DATASOURCE_PASSWORD=mysqlpw
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
-
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
       - KAFKA_CLUSTERS_BOOTSTRAPSERVERS=kafka:29092
@@ -60,7 +77,7 @@ services:
       - TASK_TOPIC=fastcampus.task.topic
 
   money-service:
-    image: fastcampuspay-money-service:1.0.0
+    image: fastcampuspay-money-service:1.0.2
     networks:
       - fastcampuspay_network
     ports:
@@ -101,6 +118,7 @@ services:
       - fastcampuspay_network
     ports:
       - '9092:9092'
+      - "29092:29092"
     environment:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES= CONTROLLER
       - KAFKA_BROKER_ID=1
@@ -183,6 +201,26 @@ services:
       - SERVICE_MEMBERSHIP_URL=http://membership-service:8080
       - SERVICE_BANKING_URL=http://banking-service:8080
       - SERVICE_MONEY_URL=http://money-service:8080
+
+volumes:
+  axonserver-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/axon-server-se/data
+  axonserver-events:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/axon-server-se/events
+  axonserver-config:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/axon-server-se/config
 
 
 networks:

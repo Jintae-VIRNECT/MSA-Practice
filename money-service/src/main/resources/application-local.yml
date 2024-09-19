@@ -15,4 +15,17 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+kafka:
+  clusters:
+    bootstrapservers: localhost:9092
 
+logging:
+  topic: fastcampus.logging.out.stdout
+task:
+  topic: fastcampus.task.topic
+  result:
+    topic: fastcampus.task.result.topic
+
+service:
+  membership:
+    url: http://localhost:8080

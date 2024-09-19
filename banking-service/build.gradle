@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.fastcampuspay.banking'
-version = '1.0.0'
+version = '1.0.1'
 
 java {
     toolchain {
@@ -23,6 +23,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation group: 'org.axonframework.extensions.springcloud', name: 'axon-springcloud-spring-boot-starter', version: '4.10.0'
+    implementation group: 'org.axonframework', name: 'axon-spring-boot-starter', version: '4.10.0'
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
