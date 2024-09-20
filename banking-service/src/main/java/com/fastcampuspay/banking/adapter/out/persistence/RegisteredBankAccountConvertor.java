@@ -10,7 +10,8 @@ public class RegisteredBankAccountConvertor {
 			new RegisteredBankAccount.MembershipId(registeredBankAccountJpaEntity.getMembershipId()),
 			new RegisteredBankAccount.BankName(registeredBankAccountJpaEntity.getBankName()),
 			new RegisteredBankAccount.BankAccountNumber(registeredBankAccountJpaEntity.getBankAccountNumber()),
-			new RegisteredBankAccount.LinkedStatusIsValid(registeredBankAccountJpaEntity.isLinkedStatusIsValid())
+			new RegisteredBankAccount.LinkedStatusIsValid(registeredBankAccountJpaEntity.isLinkedStatusIsValid()),
+			new RegisteredBankAccount.AggregateIdentifier(registeredBankAccountJpaEntity.getAggregateIdentifier())
 		);
 	}
 }

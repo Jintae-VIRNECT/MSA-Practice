@@ -27,20 +27,28 @@ public class RegisteredBankAccountJpaEntity {
 
 	private boolean linkedStatusIsValid;
 
+	private String aggregateIdentifier;
+
 	@Builder
-	public RegisteredBankAccountJpaEntity(String membershipId, String bankName, String bankAccountNumber, boolean linkedStatusIsValid) {
+	public RegisteredBankAccountJpaEntity(
+		String membershipId, String bankName, String bankAccountNumber, boolean linkedStatusIsValid, String aggregateIdentifier
+	) {
 		this.membershipId = membershipId;
 		this.bankName = bankName;
 		this.bankAccountNumber = bankAccountNumber;
 		this.linkedStatusIsValid = linkedStatusIsValid;
+		this.aggregateIdentifier = aggregateIdentifier;
 	}
 
-	public static RegisteredBankAccountJpaEntity of(String membershipId, String bankName, String bankAccountNumber, boolean linkedStatusIsValid) {
+	public static RegisteredBankAccountJpaEntity of(
+		String membershipId, String bankName, String bankAccountNumber, boolean linkedStatusIsValid, String aggregateIdentifier
+	) {
 		return RegisteredBankAccountJpaEntity.builder()
 			.membershipId(membershipId)
 			.bankName(bankName)
 			.bankAccountNumber(bankAccountNumber)
 			.linkedStatusIsValid(linkedStatusIsValid)
+			.aggregateIdentifier(aggregateIdentifier)
 			.build();
 	}
 

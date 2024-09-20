@@ -10,8 +10,8 @@ import com.fastcampuspay.common.CountDownLatchManager;
 import com.fastcampuspay.common.RechargingMoneyTask;
 import com.fastcampuspay.common.SubTask;
 import com.fastcampuspay.common.UseCase;
-import com.fastcampuspay.money.adapter.axon.command.IncreaseMemberMoneyCommand;
 import com.fastcampuspay.money.adapter.axon.command.MemberMoneyCreatedCommand;
+import com.fastcampuspay.money.adapter.axon.command.RechargingMoneyRequestCreateCommand;
 import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
 import com.fastcampuspay.money.adapter.out.persistence.MoneyChangingRequestMapper;
 import com.fastcampuspay.money.application.port.in.CreateMemberMoneyCommand;
@@ -28,8 +28,10 @@ import com.fastcampuspay.money.domain.MoneyChangingRequest;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @UseCase
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase, CreateMemberMoneyUseCase {
@@ -156,30 +158,50 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
 
 	@Override
 	public void increaseMoneyRequestByEvent(IncreaseMoneyRequestCommand command) {
+		log.info("머니 증가 요청 시작 service");
 		MemberMoneyJpaEntity memberMoneyJpaEntity = getMemberMoneyPort.getMemberMoney(
 			new MemberMoney.MembershipId(command.getTargetMembershipId())
 		);
+		String memberMoneyAggregateIdentifier = memberMoneyJpaEntity.getAggregateIdentifier();
 
-		String aggregateIdentifier = memberMoneyJpaEntity.getAggregateIdentifier();
-		// command
-		commandGateway.send(IncreaseMemberMoneyCommand.builder()
-				.aggregateIdentifier(aggregateIdentifier)
-				.membershipId(command.getTargetMembershipId())
-				.amount(command.getAmount()).build())
-			.whenComplete(
-				(result, throwable) -> {
-					if (throwable != null) {
-						throwable.printStackTrace();
-						throw new RuntimeException(throwable);
-					} else {
-						// Increase money -> money incr
-						System.out.println("increaseMoney result = " + result);
-						increaseMoneyPort.increaseMoney(
-							new MemberMoney.MembershipId(command.getTargetMembershipId())
-							, command.getAmount());
-					}
+		// Saga 의 시작을 나타내는 커맨드!
+		// RechargingMoneyRequestCreateCommand
+		commandGateway.send(new RechargingMoneyRequestCreateCommand(
+				memberMoneyAggregateIdentifier,
+				UUID.randomUUID().toString(),
+				command.getTargetMembershipId(),
+				command.getAmount()
+			)
+		).whenComplete(
+			(result, throwable) -> {
+				if (throwable != null) {
+					throwable.printStackTrace();
+					throw new RuntimeException(throwable);
+				} else {
+					System.out.println("result = " + result); // aggregateIdentifier
 				}
-			);
+			}
+		);
+		// String aggregateIdentifier = memberMoneyJpaEntity.getAggregateIdentifier();
+		// // command
+		// commandGateway.send(IncreaseMemberMoneyCommand.builder()
+		// 		.aggregateIdentifier(aggregateIdentifier)
+		// 		.membershipId(command.getTargetMembershipId())
+		// 		.amount(command.getAmount()).build())
+		// 	.whenComplete(
+		// 		(result, throwable) -> {
+		// 			if (throwable != null) {
+		// 				throwable.printStackTrace();
+		// 				throw new RuntimeException(throwable);
+		// 			} else {
+		// 				// Increase money -> money incr
+		// 				System.out.println("increaseMoney result = " + result);
+		// 				increaseMoneyPort.increaseMoney(
+		// 					new MemberMoney.MembershipId(command.getTargetMembershipId())
+		// 					, command.getAmount());
+		// 			}
+		// 		}
+		// 	);
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.fastcampuspay.money.adapter.axon.aggregate;
 
+import static org.axonframework.modelling.command.AggregateLifecycle.*;
+
 import java.util.UUID;
 
 import org.axonframework.commandhandling.CommandHandler;
@@ -10,14 +12,20 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import com.fastcampuspay.money.adapter.axon.command.IncreaseMemberMoneyCommand;
 import com.fastcampuspay.money.adapter.axon.command.MemberMoneyCreatedCommand;
+import com.fastcampuspay.money.adapter.axon.command.RechargingMoneyRequestCreateCommand;
 import com.fastcampuspay.money.adapter.axon.event.IncreaseMemberMoneyEvent;
 import com.fastcampuspay.money.adapter.axon.event.MemberMoneyCreatedEvent;
+import com.fastcampuspay.money.adapter.axon.event.RechargingRequestCreatedEvent;
+import com.fastcampuspay.money.application.port.out.GetRegisteredBankAccountPort;
+import com.fastcampuspay.money.application.port.out.RegisteredBankAccountAggregateIdentifier;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Aggregate()
 @Data
+@Slf4j
 public class MemberMoneyAggregate {
 	@AggregateIdentifier
 	private String id;
@@ -46,12 +54,37 @@ public class MemberMoneyAggregate {
 		return id;
 	}
 
+	@CommandHandler
+	public void handler(RechargingMoneyRequestCreateCommand command, GetRegisteredBankAccountPort getRegisteredBankAccountPort) {
+		log.info("RechargingMoneyRequestCreateCommand Handler  id = {}", command.getAggregateIdentifier());
+		log.info("MemeberMoneyAggregate Handler의 돈 증가 요청 핸들러.");
+		id = command.getAggregateIdentifier();
+
+		// new RechargingRequestCreatedEvent
+		// banking 정보가 필요해요. -> bank svc (get RegisteredBankAccount) 를 위한. Port.
+		RegisteredBankAccountAggregateIdentifier registeredBankAccountAggregateIdentifier
+			= getRegisteredBankAccountPort.getRegisteredBankAccount(command.getMembershipId());
+
+		// Saga Start
+		apply(new RechargingRequestCreatedEvent(
+			command.getRechargingRequestId(),
+			command.getMembershipId(),
+			command.getAmount(),
+			registeredBankAccountAggregateIdentifier.getAggregateIdentifier(),
+			registeredBankAccountAggregateIdentifier.getBankName(),
+			registeredBankAccountAggregateIdentifier.getBankAccountNumber()
+		));
+	}
+
 	@EventSourcingHandler
 	public void on(MemberMoneyCreatedEvent event) {
-		System.out.println("MemberMoneyCreatedEvent Sourcing Handler");
+		log.info("MemberMoneyCreatedEvent Sourcing Handler. 1번");
+
 		id = UUID.randomUUID().toString();
 		membershipId = Long.parseLong(event.getMembershipId());
 		balance = 0;
+
+		log.info("MemberMoneyCreatedEvent Sourcing Handler. id : {}", id);
 	}
 
 	@EventSourcingHandler

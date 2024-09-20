@@ -21,8 +21,10 @@ import com.fastcampuspay.common.UseCase;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @UseCase
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class RequestFirmbankingService implements RequestFirmbankingUseCase, UpdateFirmbankingUseCase {
@@ -53,7 +55,8 @@ public class RequestFirmbankingService implements RequestFirmbankingUseCase, Upd
 			command.getFromBankName(),
 			command.getFromBankAccountNumber(),
 			command.getToBankName(),
-			command.getToBankAccountNumber()
+			command.getToBankAccountNumber(),
+			command.getMoneyAmount()
 		));
 
 		// Transactional UUID
@@ -87,6 +90,7 @@ public class RequestFirmbankingService implements RequestFirmbankingUseCase, Upd
 			(result, throwable) -> {
 				if (throwable != null) {
 					// 실패
+					log.error("createFirmbankingRequestCommand failed, Aggregate ID: " + result.toString());
 					throwable.printStackTrace();
 				} else {
 					System.out.println("createFirmbankingRequestCommand completed, Aggregate ID: " + result.toString());
@@ -107,7 +111,8 @@ public class RequestFirmbankingService implements RequestFirmbankingUseCase, Upd
 						command.getFromBankName(),
 						command.getFromBankAccountNumber(),
 						command.getToBankName(),
-						command.getToBankAccountNumber()
+						command.getToBankAccountNumber(),
+						command.getMoneyAmount()
 					));
 
 					// 결과에 따라서 DB save

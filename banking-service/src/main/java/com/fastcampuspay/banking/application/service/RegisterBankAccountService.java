@@ -1,11 +1,17 @@
 package com.fastcampuspay.banking.application.service;
 
+import org.axonframework.commandhandling.gateway.CommandGateway;
+
+import com.fastcampuspay.banking.adapter.axon.command.CreateRegisteredBankAccountCommand;
 import com.fastcampuspay.banking.adapter.out.external.bank.BankAccount;
 import com.fastcampuspay.banking.adapter.out.external.bank.GetBankAccountRequest;
 import com.fastcampuspay.banking.adapter.out.persistence.RegisteredBankAccountConvertor;
 import com.fastcampuspay.banking.adapter.out.persistence.RegisteredBankAccountJpaEntity;
+import com.fastcampuspay.banking.application.port.in.GetRegisteredBankAccountCommand;
+import com.fastcampuspay.banking.application.port.in.GetRegisteredBankAccountUseCase;
 import com.fastcampuspay.banking.application.port.in.RegisterBankAccountCommand;
 import com.fastcampuspay.banking.application.port.in.RegisterBankAccountUseCase;
+import com.fastcampuspay.banking.application.port.out.GetRegisteredBankAccountPort;
 import com.fastcampuspay.banking.application.port.out.RegisterBankAccountPort;
 import com.fastcampuspay.banking.application.port.out.RequestBankAccountInfoPort;
 import com.fastcampuspay.banking.domain.RegisteredBankAccount;
@@ -17,10 +23,12 @@ import lombok.RequiredArgsConstructor;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class RegisterBankAccountService implements RegisterBankAccountUseCase {
+public class RegisterBankAccountService implements RegisterBankAccountUseCase, GetRegisteredBankAccountUseCase {
 
 	private final RegisterBankAccountPort registerBankAccountPort;
 	private final RequestBankAccountInfoPort requestBankAccountInfoPort;
+	private final GetRegisteredBankAccountPort getRegisteredBankAccountPort;
+	private final CommandGateway commandGateway;
 
 	@Override
 	public RegisteredBankAccount registerBankAccount(RegisterBankAccountCommand command) {
@@ -48,11 +56,39 @@ public class RegisterBankAccountService implements RegisterBankAccountUseCase {
 				new RegisteredBankAccount.MembershipId(command.getMembershipId()),
 				new RegisteredBankAccount.BankName(command.getBankName()),
 				new RegisteredBankAccount.BankAccountNumber(command.getBankAccountNumber()),
-				new RegisteredBankAccount.LinkedStatusIsValid(command.isValid())
+				new RegisteredBankAccount.LinkedStatusIsValid(command.isValid()),
+				new RegisteredBankAccount.AggregateIdentifier("")
 			);
 			return RegisteredBankAccountConvertor.entityToDomain(savedAccountInfo);
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void registerBankAccountByEvent(RegisterBankAccountCommand command) {
+		commandGateway.send(new CreateRegisteredBankAccountCommand(command.getMembershipId(), command.getBankName(), command.getBankAccountNumber()))
+			.whenComplete(
+				(result, throwable) -> {
+					if (throwable != null) {
+						throwable.printStackTrace();
+					} else {
+						// 정상적으로 이벤트 소싱.
+						// -> registeredBankAccount 를 insert
+						registerBankAccountPort.createRegisteredBankAccount(
+							new RegisteredBankAccount.MembershipId(command.getMembershipId()),
+							new RegisteredBankAccount.BankName(command.getBankName()),
+							new RegisteredBankAccount.BankAccountNumber(command.getBankAccountNumber()),
+							new RegisteredBankAccount.LinkedStatusIsValid(command.isValid()),
+							new RegisteredBankAccount.AggregateIdentifier(result.toString())
+						);
+					}
+				}
+			);
+	}
+
+	@Override
+	public RegisteredBankAccount getRegisteredBankAccount(GetRegisteredBankAccountCommand command) {
+		return RegisteredBankAccountConvertor.entityToDomain(getRegisteredBankAccountPort.getRegisteredBankAccount(command));
 	}
 }

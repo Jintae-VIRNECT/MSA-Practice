@@ -19,6 +19,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    implementation group: 'org.axonframework', name: 'axon-spring-boot-starter', version: '4.10.0'
+
 }
 
 tasks.named('test') {
