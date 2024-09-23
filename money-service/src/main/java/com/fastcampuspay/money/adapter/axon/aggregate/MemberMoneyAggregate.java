@@ -34,14 +34,14 @@ public class MemberMoneyAggregate {
 
 	private int balance;
 
+	public MemberMoneyAggregate() {
+	}
+
 	@CommandHandler
 	public MemberMoneyAggregate(MemberMoneyCreatedCommand command) {
 		System.out.println("MemberMoneyCreatedCommand Handler");
 
 		AggregateLifecycle.apply(new MemberMoneyCreatedEvent(command.getMembershipId()));
-	}
-
-	public MemberMoneyAggregate() {
 	}
 
 	@CommandHandler
@@ -78,8 +78,6 @@ public class MemberMoneyAggregate {
 
 	@EventSourcingHandler
 	public void on(MemberMoneyCreatedEvent event) {
-		log.info("MemberMoneyCreatedEvent Sourcing Handler. 1번");
-
 		id = UUID.randomUUID().toString();
 		membershipId = Long.parseLong(event.getMembershipId());
 		balance = 0;

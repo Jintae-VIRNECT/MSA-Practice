@@ -39,3 +39,6 @@ out/
 ### data ###
 
 /db/data/
+
+### axon ###
+/axon-server-se/
