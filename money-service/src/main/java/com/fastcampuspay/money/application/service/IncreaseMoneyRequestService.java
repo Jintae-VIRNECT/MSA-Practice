@@ -13,13 +13,16 @@ import com.fastcampuspay.common.UseCase;
 import com.fastcampuspay.money.adapter.axon.command.MemberMoneyCreatedCommand;
 import com.fastcampuspay.money.adapter.axon.command.RechargingMoneyRequestCreateCommand;
 import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
+import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyMapper;
 import com.fastcampuspay.money.adapter.out.persistence.MoneyChangingRequestMapper;
 import com.fastcampuspay.money.application.port.in.CreateMemberMoneyCommand;
 import com.fastcampuspay.money.application.port.in.CreateMemberMoneyPort;
 import com.fastcampuspay.money.application.port.in.CreateMemberMoneyUseCase;
+import com.fastcampuspay.money.application.port.in.FindMemberMoneyListByMembershipIdsCommand;
 import com.fastcampuspay.money.application.port.in.GetMemberMoneyPort;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestUseCase;
+import com.fastcampuspay.money.application.port.out.GetMemberMoneyListPort;
 import com.fastcampuspay.money.application.port.out.IncreaseMoneyPort;
 import com.fastcampuspay.money.application.port.out.SendRechargingMoneyTaskPort;
 import com.fastcampuspay.money.domain.MemberMoney;
@@ -38,11 +41,13 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
 
 	private final IncreaseMoneyPort increaseMoneyPort;
 	private final MoneyChangingRequestMapper mapper;
+	private final MemberMoneyMapper memberMoneyMapper;
 	private final SendRechargingMoneyTaskPort sendRechargingMoneyTaskPort;
 	private final CountDownLatchManager countDownLatchManager;
 	private final CommandGateway commandGateway;
 	private final CreateMemberMoneyPort createMemberMoneyPort;
 	private final GetMemberMoneyPort getMemberMoneyPort;
+	private final GetMemberMoneyListPort getMemberMoneyListPort;
 
 	@Override
 	public MoneyChangingRequest increaseMoneyRequest(IncreaseMoneyRequestCommand command) {
@@ -202,6 +207,19 @@ public class IncreaseMoneyRequestService implements IncreaseMoneyRequestUseCase,
 		// 			}
 		// 		}
 		// 	);
+	}
+
+	@Override
+	public List<MemberMoney> findMemberMoneyListByMembershipIds(FindMemberMoneyListByMembershipIdsCommand command) {
+		// 여러개의 membership Ids 를 기준으로, memberMoney 정보를 가져와야 해요.
+		List<MemberMoneyJpaEntity> memberMoneyJpaEntityList = getMemberMoneyListPort.getMemberMoneyPort(command.getMembershipIds());
+		List<MemberMoney> memberMoneyList = new ArrayList<>();
+
+		for (MemberMoneyJpaEntity memberMoneyJpaEntity : memberMoneyJpaEntityList) {
+			memberMoneyList.add(memberMoneyMapper.mapToDomainEntity(memberMoneyJpaEntity));
+		}
+
+		return memberMoneyList;
 	}
 
 }

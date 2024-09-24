@@ -1,5 +1,7 @@
 package com.fastcampuspay.money.adapter.in.web;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,12 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fastcampuspay.common.WebAdapter;
 import com.fastcampuspay.money.application.port.in.CreateMemberMoneyCommand;
 import com.fastcampuspay.money.application.port.in.CreateMemberMoneyUseCase;
+import com.fastcampuspay.money.application.port.in.FindMemberMoneyListByMembershipIdsCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestCommand;
 import com.fastcampuspay.money.application.port.in.IncreaseMoneyRequestUseCase;
+import com.fastcampuspay.money.domain.MemberMoney;
 import com.fastcampuspay.money.domain.MoneyChangingRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
@@ -91,4 +97,24 @@ public class RequestMoneyChangingController {
 		increaseMoneyRequestUseCase.increaseMoneyRequestByEvent(command);
 	}
 
+	@PostMapping(path = "/money/decrease-eda")
+	MoneyChangingResultDetail decreaseMoneyChangingRequestByEvent(@RequestBody DecreaseMoneyChangingRequest request) {
+		IncreaseMoneyRequestCommand command = IncreaseMoneyRequestCommand.builder()
+			.targetMembershipId(request.getTargetMembershipId())
+			.amount(request.getAmount() * -1)
+			.build();
+
+		increaseMoneyRequestUseCase.increaseMoneyRequestByEvent(command);
+		return null;
+	}
+
+	@PostMapping(path = "/money/member-money")
+	List<MemberMoney> findMemberMoneyListByMembershipIds(@RequestBody FindMemberMoneyListByMembershipIdsRequest request) {
+		log.info("findMemberMoneyListByMembershipIds");
+		FindMemberMoneyListByMembershipIdsCommand command = FindMemberMoneyListByMembershipIdsCommand.builder()
+			.membershipIds(request.getMembershipIds())
+			.build();
+
+		return increaseMoneyRequestUseCase.findMemberMoneyListByMembershipIds(command);
+	}
 }

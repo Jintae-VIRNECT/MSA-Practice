@@ -1,5 +1,7 @@
 package com.fastcampuspay.membership.adapter.out.persistence;
 
+import java.util.List;
+
 import com.fastcampuspay.common.PersistenceAdapter;
 import com.fastcampuspay.membership.application.port.out.FindMembershipPort;
 import com.fastcampuspay.membership.application.port.out.ModifyMembershipPort;
@@ -35,6 +37,13 @@ public class MembershipPersistenceAdapter implements RegisterMembershipPort, Fin
 	@Override
 	public MembershipJpaEntity findMembership(Membership.MembershipId membershipId) {
 		return membershipRepository.findById(Long.parseLong(membershipId.getIdValue())).get();
+	}
+
+	@Override
+	public List<MembershipJpaEntity> findMembershipListByAddress(Membership.MembershipAddress membershipAddress) {
+		// 관악구, 서초구, 강남구 중 하나
+		String address = membershipAddress.getAddressValue();
+		return membershipRepository.findByAddress(address);
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import com.fastcampuspay.common.event.RollbackFirmbankingFinishedEvent;
 import com.fastcampuspay.money.adapter.axon.event.RechargingRequestCreatedEvent;
 import com.fastcampuspay.money.adapter.out.persistence.MemberMoneyJpaEntity;
 import com.fastcampuspay.money.application.port.out.IncreaseMoneyPort;
+import com.fastcampuspay.money.domain.MemberMoney;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -122,11 +123,11 @@ public class MoneyRechargeSaga {
 		}
 
 		// DB Update 명령.
-		MemberMoneyJpaEntity resultEntity = null;
-		// increaseMoneyPort.increaseMoney(
-		// 	new MemberMoney.MembershipId(event.getMembershipId())
-		// 	, event.getMoneyAmount()
-		// );
+		// MemberMoneyJpaEntity resultEntity = null;
+		MemberMoneyJpaEntity resultEntity = increaseMoneyPort.increaseMoney(
+			new MemberMoney.MembershipId(event.getMembershipId())
+			, event.getMoneyAmount()
+		);
 
 		if (resultEntity == null) {
 			// 실패 시, 롤백 이벤트
