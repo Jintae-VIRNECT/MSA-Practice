@@ -67,7 +67,8 @@ public class FirmbankingRequestAggregate {
 			new FirmbankingRequest.ToBankAccountNumber("123-333-9999"),
 			new FirmbankingRequest.MoneyAmount(command.getMoneyAmount()),
 			new FirmbankingRequest.FirmbankingStatus(0),
-			new FirmbankingRequest.FirmbankingAggregateIdentifier(id)
+			new FirmbankingRequest.FirmbankingAggregateIdentifier(id),
+			command.getMembershipId()
 		);
 
 		// firmbanking!
@@ -111,7 +112,8 @@ public class FirmbankingRequestAggregate {
 			new FirmbankingRequest.ToBankAccountNumber(command.getBankAccountNumber()),
 			new FirmbankingRequest.MoneyAmount(command.getMoneyAmount()),
 			new FirmbankingRequest.FirmbankingStatus(0),
-			new FirmbankingRequest.FirmbankingAggregateIdentifier(id)
+			new FirmbankingRequest.FirmbankingAggregateIdentifier(id),
+			command.getMembershipId()
 		);
 
 		// firmbanking!

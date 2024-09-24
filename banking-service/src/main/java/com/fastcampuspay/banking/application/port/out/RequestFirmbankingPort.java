@@ -12,7 +12,8 @@ public interface RequestFirmbankingPort {
 		FirmbankingRequest.ToBankAccountNumber toBankAccountNumber,
 		FirmbankingRequest.MoneyAmount moneyAmount,
 		FirmbankingRequest.FirmbankingStatus firmbankingStatus,
-		FirmbankingRequest.FirmbankingAggregateIdentifier aggregateIdentifier
+		FirmbankingRequest.FirmbankingAggregateIdentifier aggregateIdentifier,
+		String membershipId
 	);
 
 	FirmbankingRequestJpaEntity modifyFirmbankingRequest(

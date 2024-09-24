@@ -47,7 +47,8 @@ public class RequestFirmbankingService implements RequestFirmbankingUseCase, Upd
 			new FirmbankingRequest.ToBankAccountNumber(command.getToBankAccountNumber()),
 			new FirmbankingRequest.MoneyAmount(command.getMoneyAmount()),
 			new FirmbankingRequest.FirmbankingStatus(0),
-			new FirmbankingRequest.FirmbankingAggregateIdentifier("")
+			new FirmbankingRequest.FirmbankingAggregateIdentifier(""),
+			""
 		);
 
 		// 2. 외부 은행에 펌뱅킹 요청
@@ -103,7 +104,8 @@ public class RequestFirmbankingService implements RequestFirmbankingUseCase, Upd
 						new FirmbankingRequest.ToBankAccountNumber(command.getToBankAccountNumber()),
 						new FirmbankingRequest.MoneyAmount(command.getMoneyAmount()),
 						new FirmbankingRequest.FirmbankingStatus(0),
-						new FirmbankingRequest.FirmbankingAggregateIdentifier(result.toString())
+						new FirmbankingRequest.FirmbankingAggregateIdentifier(result.toString()),
+						""
 					);
 
 					// 은행에 펌뱅킹 요청

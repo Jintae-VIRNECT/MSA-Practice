@@ -143,6 +143,36 @@ services:
       - ZOO_TLS_CLIENT_AUTH=none
       - ZOO_TLS_QUORUM_CLIENT_AUTH=none
 
+
+  money-query-service:
+    image: fastcampuspay-money-query-service:1.0.0
+    networks:
+      - fastcampuspay_network
+    ports:
+      - "8088:8080"
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+      - AXON_AXONSERVER_SERVERS=axon-server:8124
+      - AXON_SERIALIZER_EVENTS=jackson
+      - AXON_SERIALIZER_MESSAGES=jackson
+      - AXON_SERIALIZER_GENERAL=xstream
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/fastcampus_pay # MongoDB 연결 URL
+      - KAFKA_CLUSTERS_BOOTSTRAPSERVERS=kafka:29092
+      - LOGGING_TOPIC=fastcampus.logging.out.stdout
+      - SERVICE_MEMBERSHIP_URL=http://membership-service:8080
+
+  mongodb: # MongoDB 서비스 추가
+    image: mongo:latest
+    container_name: mongodb
+    networks:
+      - fastcampuspay_network
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db/mongo:/data/db
+
   kafka:
     image: 'bitnami/kafka:3.4.0'
     networks:
