@@ -25,7 +25,9 @@ public class DummyMoneyDataSimulator {
 		Random random = new Random();
 		List<Integer> readyMemberList = new ArrayList<>();
 
-		while (true) {
+		int numberOfDummyData = 10000;
+
+		for (int i = 1; i <= numberOfDummyData; i++) {
 			int amount = random.nextInt(20001) - 10000; // Random number between -100000 and 100000
 			int targetMembershipId = random.nextInt(10000) + 1; // Random number between 1 and 100000
 

@@ -1,6 +1,9 @@
 package com.fastcampuspay.payment.application.service;
 
+import java.util.List;
+
 import com.fastcampuspay.common.UseCase;
+import com.fastcampuspay.payment.application.port.in.FinishSettlementCommand;
 import com.fastcampuspay.payment.application.port.in.RequestPaymentCommand;
 import com.fastcampuspay.payment.application.port.in.RequestPaymentUseCase;
 import com.fastcampuspay.payment.application.port.out.CreatePaymentPort;
@@ -40,5 +43,15 @@ public class PaymentService implements RequestPaymentUseCase {
 			command.getFranchiseId(),
 			command.getFranchiseFeeRate()
 		);
+	}
+
+	@Override
+	public List<Payment> getNormalStatusPayments() {
+		return createPaymentPort.getNormalStatusPayments();
+	}
+
+	@Override
+	public void finishPayment(FinishSettlementCommand command) {
+		createPaymentPort.changePaymentRequestStatus(command.getPaymentId(), 2);
 	}
 }
