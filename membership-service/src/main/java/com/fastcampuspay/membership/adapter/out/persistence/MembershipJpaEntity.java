@@ -23,24 +23,27 @@ public class MembershipJpaEntity {
 	private String address;
 	private boolean isValid;
 	private boolean isCorp;
+	private String refreshToken;
 
 	@Builder
-	public MembershipJpaEntity(Long id, String name, String email, String address, boolean isValid, boolean isCorp) {
+	public MembershipJpaEntity(Long id, String name, String email, String address, boolean isValid, boolean isCorp, String refreshToken) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.address = address;
 		this.isValid = isValid;
 		this.isCorp = isCorp;
+		this.refreshToken = refreshToken;
 	}
 
-	public static MembershipJpaEntity of(String name, String email, String address, boolean isValid, boolean isCorp) {
+	public static MembershipJpaEntity of(String name, String email, String address, boolean isValid, boolean isCorp, String refreshToken) {
 		return MembershipJpaEntity.builder()
 			.name(name)
 			.email(email)
 			.address(address)
 			.isValid(isValid)
 			.isCorp(isCorp)
+			.refreshToken(refreshToken)
 			.build();
 	}
 }

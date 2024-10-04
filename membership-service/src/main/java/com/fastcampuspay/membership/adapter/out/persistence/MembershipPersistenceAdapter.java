@@ -29,7 +29,8 @@ public class MembershipPersistenceAdapter implements RegisterMembershipPort, Fin
 				membershipEmail.getEmailValue(),
 				membershipAddress.getAddressValue(),
 				membershipIsValid.isValidValue(),
-				membershipIsCorp.isCorpValue()
+				membershipIsCorp.isCorpValue(),
+				""
 			)
 		);
 	}
@@ -49,7 +50,8 @@ public class MembershipPersistenceAdapter implements RegisterMembershipPort, Fin
 	@Override
 	public MembershipJpaEntity modifyMembership(
 		Membership.MembershipId membershipId, Membership.MembershipName membershipName, Membership.MembershipEmail membershipEmail,
-		Membership.MembershipAddress membershipAddress, Membership.MembershipIsValid membershipIsValid, Membership.MembershipIsCorp membershipIsCorp
+		Membership.MembershipAddress membershipAddress, Membership.MembershipIsValid membershipIsValid, Membership.MembershipIsCorp membershipIsCorp,
+		Membership.MembershipRefreshToken membershipRefreshToken
 	) {
 		MembershipJpaEntity entity = membershipRepository.getById(Long.parseLong(membershipId.getIdValue()));
 		entity.setName(membershipName.getNameValue());
@@ -57,6 +59,7 @@ public class MembershipPersistenceAdapter implements RegisterMembershipPort, Fin
 		entity.setAddress(membershipAddress.getAddressValue());
 		entity.setValid(membershipIsValid.isValidValue());
 		entity.setCorp(membershipIsCorp.isCorpValue());
+		entity.setRefreshToken(membershipRefreshToken.getRefreshToken());
 		return membershipRepository.save(entity);
 	}
 }

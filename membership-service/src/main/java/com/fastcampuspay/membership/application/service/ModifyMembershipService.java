@@ -23,7 +23,8 @@ public class ModifyMembershipService implements ModifyMembershipUserCase {
 			new Membership.MembershipEmail(command.getEmail()),
 			new Membership.MembershipAddress(command.getAddress()),
 			new Membership.MembershipIsValid(command.isValid()),
-			new Membership.MembershipIsCorp(command.isCorp())
+			new Membership.MembershipIsCorp(command.isCorp()),
+			new Membership.MembershipRefreshToken("")
 		);
 
 		return MembershipConvertor.entityToDomain(jpaEntity);
